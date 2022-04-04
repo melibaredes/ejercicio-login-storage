@@ -63,3 +63,63 @@ TIPS:
 
    ¡Manos a la obra!
  */
+
+const emailInput = document.getElementById('email-input');
+const passInput = document.getElementById('password-input');
+const formulario = document.querySelector('form');
+const loader = document.getElementById('loader');
+const errorContainer = document.getElementById('error-container');
+const botonLogIn = document.querySelector('.login-btn');
+const user = document.getElementById('email-input');
+const pass = document.getElementById('password-input');
+const main = document.querySelector('main');
+
+
+botonLogIn.addEventListener('click', verificarInfo);
+function verificarInfo(event){
+  let sesionCorrecta = false;
+  console.log('Entre a la función');
+  baseDeDatos.usuarios.forEach(usuario => {
+    console.log(usuario);
+    if (usuario.email == user.value && usuario.password == pass.value) {
+      loader.classList.remove('hidden');
+      console.log('Entre al if de iniciar sesión');
+      sesionCorrecta = true;
+      errorContainer.innerHTML = "";
+      const infoUsuario = {
+        nombre: usuario.name,
+        mailUsuario: usuario.email,
+        idUsuario: usuario.id
+      };
+      localStorage.setItem("infoUsuario", JSON.stringify(infoUsuario));
+      setTimeout(function recargarPagina(){
+        location.reload();
+      }, 1500)
+    }});
+  if (!sesionCorrecta){
+    errorContainer.classList.remove('hidden');
+    errorContainer.innerHTML += "<p>Los datos ingresados son incorrectos.</p>";
+    loader.classList.add('hidden');
+  }
+}
+
+
+window.addEventListener('load', validarUsuario);
+
+function validarUsuario(){
+  try {
+    const usuarioLocal = JSON.parse(localStorage.getItem("infoUsuario"));
+    if (usuarioLocal){
+      main.innerHTML = `<h1>Bienvenid@, ${usuarioLocal.nombre}</h1> <button id="botonSignOut" class = "login-btn">Cerrar sesión</button>`
+    }
+    const botonCerrarSesion = document.getElementById('botonSignOut');
+    botonCerrarSesion.addEventListener('click', function cerrarSesion(){
+      alert('Estás cerrando sesión.');
+      localStorage.clear();
+      location.reload();
+    })
+  } catch (error) {
+    //
+  }
+  
+}
